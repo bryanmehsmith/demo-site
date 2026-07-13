@@ -1,8 +1,11 @@
 :8080 {
-	# One handle_path block per demo. Streamlit demos reverse_proxy to their
-	# internal port (see demos.json); static/JS demos would instead root+file_server
-	# out of static/demos/<slug>.
-	handle_path /demos/momentum-factor* {
+	# One block per demo. Streamlit demos use `handle` (not handle_path) and
+	# reverse_proxy to their internal port (see demos.json) — Streamlit's own
+	# --server.baseUrlPath expects the full /demos/<slug> prefix to stay on the
+	# request, so the prefix must NOT be stripped before proxying.
+	# Static/JS demos would instead use handle_path + root+file_server out of
+	# static/demos/<slug>, since those don't care about the prefix.
+	handle /demos/momentum-factor* {
 		reverse_proxy 127.0.0.1:8501
 	}
 

@@ -14,9 +14,12 @@ process that Caddy proxies to at `/demos/<slug>`.
 1. `git submodule add <repo-url> apps/<slug>` — the target repo needs its own
    `pyproject.toml`/`uv.lock` and a Streamlit entrypoint at a known relative path.
 2. Add an entry to `demos.json` (slug, entrypoint path, port).
-3. Duplicate a builder stage in the `Dockerfile` for the new submodule, and add
-   its `COPY --from=<slug>-builder` line in the final stage.
-4. Add a `handle_path /demos/<slug>*` block to `Caddyfile`.
+3. Duplicate a builder stage in the `Dockerfile` for the new submodule (with a
+   matching `WORKDIR /app/apps/<slug>` — uv venvs bake in their build path, so
+   it must match the final location), and add its `COPY --from=<slug>-builder`
+   line in the final stage.
+4. Add a `handle /demos/<slug>*` block to `Caddyfile` (not `handle_path` —
+   Streamlit's `--server.baseUrlPath` needs the full prefix kept on the request).
 5. Link it from `static/index.html`.
 
 Push to `main` — GitHub Actions builds the image, pushes to `ghcr.io`, and
