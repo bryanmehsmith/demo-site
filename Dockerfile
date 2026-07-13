@@ -16,11 +16,13 @@ RUN uv sync --frozen --no-dev
 FROM caddy:2 AS caddy
 
 FROM python:3.12-slim-bookworm
+RUN useradd --create-home --uid 1000 appuser
 WORKDIR /app
 COPY --from=caddy /usr/bin/caddy /usr/local/bin/caddy
 COPY --from=momentum-factor-builder /app/apps/momentum-factor /app/apps/momentum-factor
 COPY static/ /app/static/
 COPY Caddyfile demos.json entrypoint.sh launch_demos.py /app/
-RUN chmod +x /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh && chown -R appuser:appuser /app
+USER appuser
 EXPOSE 8080
 CMD ["/app/entrypoint.sh"]
