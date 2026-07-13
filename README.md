@@ -21,9 +21,15 @@ process that Caddy proxies to at `/demos/<slug>`.
 4. Add a `handle /demos/<slug>*` block to `Caddyfile` (not `handle_path` —
    Streamlit's `--server.baseUrlPath` needs the full prefix kept on the request).
 5. Link it from `static/index.html`.
+6. If the demo's own repo should auto-publish on every push to its `main`
+   branch (like momentum-factor does), add a `.github/workflows/bump-demo-site.yml`
+   to *that* repo, modeled on the one in the momentum-factor repo — it needs a
+   `DEMO_SITE_PAT` secret (fine-grained PAT scoped to just this repo, Contents:
+   Read and write) to push the submodule bump here.
 
-Push to `main` — GitHub Actions builds the image, pushes to `ghcr.io`, and
-updates the Azure Container App to the new revision.
+Push to `main` (here, or via an upstream demo repo's auto-bump workflow) —
+GitHub Actions builds the image, pushes to `ghcr.io`, and updates the Azure
+Container App to the new revision.
 
 ## Local dev
 
