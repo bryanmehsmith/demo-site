@@ -1,6 +1,6 @@
 # demo-site
 
-Hosts `demo.bryansmith.co.za` — a single Azure Container App that fronts many
+Hosts `demo.bryansmith.co.za`, a single Azure Container App that fronts many
 lightweight POC demos behind one Caddy reverse proxy. Static/JS demos are served
 directly from `static/demos/<slug>/`; Streamlit demos each live in their own repo,
 pulled in here as a git submodule under `apps/<slug>` and run as an internal
@@ -11,23 +11,23 @@ process that Caddy proxies to at `/demos/<slug>`.
 **Static/JS:** add `static/demos/<slug>/`, link it from `static/index.html`.
 
 **Streamlit:**
-1. `git submodule add <repo-url> apps/<slug>` — the target repo needs its own
+1. `git submodule add <repo-url> apps/<slug>`. The target repo needs its own
    `pyproject.toml`/`uv.lock` and a Streamlit entrypoint at a known relative path.
 2. Add an entry to `demos.json` (slug, entrypoint path, port).
 3. Duplicate a builder stage in the `Dockerfile` for the new submodule (with a
-   matching `WORKDIR /app/apps/<slug>` — uv venvs bake in their build path, so
+   matching `WORKDIR /app/apps/<slug>` (uv venvs bake in their build path, so
    it must match the final location), and add its `COPY --from=<slug>-builder`
    line in the final stage.
-4. Add a `handle /demos/<slug>*` block to `Caddyfile` (not `handle_path` —
+4. Add a `handle /demos/<slug>*` block to `Caddyfile` (not `handle_path`;
    Streamlit's `--server.baseUrlPath` needs the full prefix kept on the request).
 5. Link it from `static/index.html`.
 6. If the demo's own repo should auto-publish on every push to its `main`
    branch (like momentum-factor does), add a `.github/workflows/bump-demo-site.yml`
-   to *that* repo, modeled on the one in the momentum-factor repo — it needs a
+   to *that* repo, modeled on the one in the momentum-factor repo. It needs a
    `DEMO_SITE_PAT` secret (fine-grained PAT scoped to just this repo, Contents:
    Read and write) to push the submodule bump here.
 
-Push to `main` (here, or via an upstream demo repo's auto-bump workflow) —
+Push to `main` (here, or via an upstream demo repo's auto-bump workflow).
 GitHub Actions builds the image, pushes to `ghcr.io`, and updates the Azure
 Container App to the new revision.
 

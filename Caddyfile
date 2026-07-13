@@ -1,6 +1,6 @@
 :8080 {
 	# One block per demo. Streamlit demos use `handle` (not handle_path) and
-	# reverse_proxy to their internal port (see demos.json) — Streamlit's own
+	# reverse_proxy to their internal port (see demos.json). Streamlit's own
 	# --server.baseUrlPath expects the full /demos/<slug> prefix to stay on the
 	# request, so the prefix must NOT be stripped before proxying.
 	# Static/JS demos would instead use handle_path + root+file_server out of
