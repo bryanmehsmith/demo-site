@@ -1,0 +1,8 @@
+[
+  {
+    "slug": "momentum-factor",
+    "kind": "streamlit",
+    "entrypoint": "app/streamlit_app.py",
+    "port": 8501
+  }
+]
