@@ -1,0 +1,3 @@
+[submodule "apps/momentum-factor"]
+	path = apps/momentum-factor
+	url = https://github.com/bryanmehsmith/basic-jse-momentum-factor.git
