@@ -5,15 +5,39 @@
 <title>Bryan Smith / Demos</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="A small collection of proof-of-concept demos by Bryan Smith, including a JSE momentum factor backtest.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230b0d10'/%3E%3Ctext x='50' y='68' font-family='ui-monospace,Menlo,monospace' font-size='58' font-weight='700' fill='%2322d3ee' text-anchor='middle'%3E$%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23fffdf9'/%3E%3Ctext x='50' y='66' font-family='Helvetica Neue,Arial,sans-serif' font-size='40' font-weight='700' fill='%237a4f22' text-anchor='middle'%3EBS%3C/text%3E%3C/svg%3E">
 <style>
   :root {
-    --bg: #0b0d10;
-    --bg-elevated: #14171a;
-    --text: #e6e6e6;
-    --muted: #8b949e;
-    --accent: #22d3ee;
-    --border: #2a2f34;
+    --background-color: #faf8f5;
+    --text-color: #2b2722;
+    --muted-text: #615950;
+    --link-color: #7a4f22;
+    --link-hover: #513313;
+    --border-color: #ded5ca;
+    --shadow-color: rgba(50, 38, 25, 0.08);
+    --shadow-soft: 0 2px 8px var(--shadow-color);
+    --card-background: #fffdf9;
+    --subtle-surface: #f5efe7;
+    --accent-color: #7a4f22;
+    --footer-background: #f5efe7;
+    --radius: 10px;
+    --radius-lg: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background-color: #11100e;
+      --text-color: #f4efe7;
+      --muted-text: #c7bba9;
+      --link-color: #d0a46a;
+      --link-hover: #f0c88f;
+      --border-color: #39342d;
+      --shadow-color: rgba(0, 0, 0, 0.24);
+      --card-background: #1c1a17;
+      --subtle-surface: #232019;
+      --accent-color: #d0a46a;
+      --footer-background: #171512;
+    }
   }
 
   * { box-sizing: border-box; }
@@ -21,40 +45,56 @@
   body {
     margin: 0;
     min-height: 100vh;
-    background: var(--bg);
-    color: var(--text);
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-    padding: 3.5rem 1.5rem;
+    background: var(--background-color);
+    color: var(--text-color);
+    font-family: "Aptos", "Helvetica Neue", sans-serif;
+    line-height: 1.6;
   }
 
-  .container { max-width: 760px; margin: 0 auto; }
+  a { color: var(--link-color); text-decoration: none; }
+  a:hover, a:focus-visible { color: var(--link-hover); }
 
-  .prompt { margin: 0; color: var(--accent); font-size: 1rem; }
-  h1 { margin: 0.4rem 0 0; font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em; }
-  .tagline { margin: 0.6rem 0 0; color: var(--muted); font-size: 0.95rem; }
+  .header {
+    background: var(--card-background);
+    border-bottom: 1px solid var(--border-color);
+    padding: 28px 16px;
+  }
+
+  .header-content { max-width: 940px; margin: 0 auto; }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
+  .tagline { margin: 10px 0 0; color: var(--muted-text); font-size: 1.02rem; }
+
+  main { max-width: 940px; margin: 0 auto; padding: 36px 16px 48px; }
 
   .demos {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
-    margin-top: 2.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
   }
 
   .card {
     display: block;
-    padding: 1.25rem 1.4rem;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--bg-elevated);
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--accent-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    padding: 20px 22px;
     color: inherit;
     text-decoration: none;
-    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
   }
 
   .card:hover, .card:focus-visible {
-    border-color: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: 0 0 0 1px var(--accent), 0 8px 24px -8px rgba(34, 211, 238, 0.25);
+    box-shadow: 0 4px 14px var(--shadow-color);
+    transform: translateY(-1px);
     outline: none;
   }
 
@@ -62,56 +102,64 @@
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: 0.75rem;
+    gap: 12px;
   }
 
-  .card-name { font-size: 1.05rem; font-weight: 600; }
+  .card-name { font-size: 1.08rem; font-weight: 650; }
 
-  .badge {
-    font-size: 0.7rem;
+  .tag {
+    font-size: 0.72rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--accent);
-    border: 1px solid var(--accent);
+    letter-spacing: 0.04em;
+    color: var(--muted-text);
+    background: var(--subtle-surface);
+    border: 1px solid var(--border-color);
     border-radius: 999px;
-    padding: 0.15rem 0.5rem;
+    padding: 3px 10px;
     white-space: nowrap;
   }
 
-  .card-desc { margin: 0.6rem 0 0; color: var(--muted); font-size: 0.85rem; line-height: 1.5; }
-  .card-cta { display: inline-block; margin-top: 1rem; color: var(--accent); font-size: 0.8rem; }
+  .card-desc { margin: 10px 0 0; color: var(--muted-text); font-size: 0.9rem; }
+  .card-cta { display: inline-block; margin-top: 14px; color: var(--link-color); font-size: 0.85rem; font-weight: 600; }
 
-  footer { margin-top: 3rem; color: var(--muted); font-size: 0.8rem; }
-  footer a { color: var(--muted); text-decoration: underline; }
-  footer a:hover, footer a:focus-visible { color: var(--accent); }
+  footer {
+    background: var(--footer-background);
+    border-top: 1px solid var(--border-color);
+    padding: 18px 16px;
+    text-align: center;
+    color: var(--muted-text);
+    font-size: 0.85rem;
+  }
 
-  @media (prefers-reduced-motion: reduce) {
-    .card { transition: none; }
+  @media (max-width: 720px) {
+    .header { padding: 22px 16px; }
+    main { padding: 28px 16px 36px; }
   }
 </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <p class="prompt">&gt; bryan smith / demos</p>
+  <header class="header">
+    <div class="header-content">
       <h1>Demos</h1>
-      <p class="tagline">A few small proof-of-concept builds.</p>
-    </header>
+      <p class="tagline">A few small proof-of-concept builds by Bryan Smith.</p>
+    </div>
+  </header>
 
-    <main class="demos">
+  <main>
+    <div class="demos">
       <a class="card" href="/demos/momentum-factor/">
         <div class="card-head">
-          <span class="card-name">momentum-factor</span>
-          <span class="badge">streamlit</span>
+          <span class="card-name">Momentum Factor</span>
+          <span class="tag">streamlit</span>
         </div>
         <p class="card-desc">JSE 12-1 month momentum factor backtest: a long-only top-quantile portfolio, rebalanced monthly.</p>
-        <span class="card-cta">open &rarr;</span>
+        <span class="card-cta">View demo &rarr;</span>
       </a>
-    </main>
+    </div>
+  </main>
 
-    <footer>
-      <a href="https://github.com/bryanmehsmith/demo-site">source on github</a>
-    </footer>
-  </div>
+  <footer>
+    <a href="https://github.com/bryanmehsmith/demo-site">Source on GitHub</a>
+  </footer>
 </body>
 </html>
