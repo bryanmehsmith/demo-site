@@ -6,6 +6,12 @@ directly from `static/demos/<slug>/`; Streamlit demos each live in their own rep
 pulled in here as a git submodule under `apps/<slug>` and run as an internal
 process that Caddy proxies to at `/demos/<slug>`.
 
+Streamlit was chosen deliberately here to keep infrastructure minimal and
+hosting cost low while still getting the analysis across. More broadly, the
+coding, architecture, and infrastructure decisions in this repo are POC-scale
+choices, not a reflection of what a company/enterprise setup would look like;
+a company environment would justify a different, more robust strategy.
+
 ## Adding a demo
 
 **Static/JS:** add `static/demos/<slug>/`, link it from `static/index.html`.
