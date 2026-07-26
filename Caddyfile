@@ -12,9 +12,14 @@
 	# Static/JS demos would instead use handle_path + root+file_server out of
 	# static/demos/<slug>, since those don't care about the prefix and need no
 	# process at all.
+	# X-Original-Uri is set explicitly rather than relying on forward_auth's
+	# defaults. launcher.py needs the real path to tell a page load from a
+	# reconnect: Streamlit retries a lost websocket forever, so those retries must
+	# not be allowed to restart a demo that was deliberately stopped.
 	handle /demos/momentum-factor* {
 		forward_auth 127.0.0.1:9000 {
 			uri /activate/momentum-factor
+			header_up X-Original-Uri {http.request.uri}
 		}
 		reverse_proxy 127.0.0.1:8501 {
 			lb_try_duration 20s
@@ -25,6 +30,7 @@
 	handle /demos/factor-regression* {
 		forward_auth 127.0.0.1:9000 {
 			uri /activate/factor-regression
+			header_up X-Original-Uri {http.request.uri}
 		}
 		reverse_proxy 127.0.0.1:8502 {
 			lb_try_duration 20s

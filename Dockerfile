@@ -5,7 +5,10 @@
 #   1. git submodule add <repo-url> apps/<slug>
 #   2. duplicate the stage below for apps/<slug>, with WORKDIR /app/apps/<slug>
 #   3. add `COPY --from=<slug>-builder /app/apps/<slug> /app/apps/<slug>` in the final stage
-#   4. add an entry to demos.json and a handle_path block to Caddyfile
+#   4. add an entry to demos.json, and a Caddyfile `handle` block containing both
+#      the forward_auth (which starts the demo on demand, and must pass
+#      X-Original-Uri) and the reverse_proxy to its port. Copy an existing block;
+#      the pieces are load-bearing and explained there.
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS momentum-factor-builder
 WORKDIR /app/apps/momentum-factor
 COPY apps/momentum-factor/pyproject.toml apps/momentum-factor/uv.lock ./
