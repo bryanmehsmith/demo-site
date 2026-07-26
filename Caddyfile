@@ -9,6 +9,10 @@
 		reverse_proxy 127.0.0.1:8501
 	}
 
+	handle /demos/factor-regression* {
+		reverse_proxy 127.0.0.1:8502
+	}
+
 	handle {
 		root * /app/static
 		file_server

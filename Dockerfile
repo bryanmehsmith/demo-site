@@ -13,6 +13,13 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY apps/momentum-factor/ .
 RUN uv sync --frozen --no-dev
 
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS factor-regression-builder
+WORKDIR /app/apps/factor-regression
+COPY apps/factor-regression/pyproject.toml apps/factor-regression/uv.lock ./
+RUN uv sync --frozen --no-dev --no-install-project
+COPY apps/factor-regression/ .
+RUN uv sync --frozen --no-dev
+
 FROM caddy:2 AS caddy
 
 FROM python:3.12-slim-bookworm
@@ -20,6 +27,7 @@ RUN useradd --create-home --uid 1000 appuser
 WORKDIR /app
 COPY --from=caddy /usr/bin/caddy /usr/local/bin/caddy
 COPY --from=momentum-factor-builder /app/apps/momentum-factor /app/apps/momentum-factor
+COPY --from=factor-regression-builder /app/apps/factor-regression /app/apps/factor-regression
 COPY static/ /app/static/
 COPY Caddyfile demos.json entrypoint.sh launch_demos.py /app/
 RUN chmod +x /app/entrypoint.sh && chown -R appuser:appuser /app

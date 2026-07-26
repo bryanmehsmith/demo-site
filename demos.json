@@ -4,5 +4,11 @@
     "kind": "streamlit",
     "entrypoint": "app/streamlit_app.py",
     "port": 8501
+  },
+  {
+    "slug": "factor-regression",
+    "kind": "streamlit",
+    "entrypoint": "app/streamlit_app.py",
+    "port": 8502
   }
 ]

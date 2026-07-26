@@ -1,3 +1,6 @@
 [submodule "apps/momentum-factor"]
 	path = apps/momentum-factor
 	url = https://github.com/bryanmehsmith/basic-jse-momentum-factor.git
+[submodule "apps/factor-regression"]
+	path = apps/factor-regression
+	url = https://github.com/bryanmehsmith/factor-regression-lab.git

@@ -1,3 +1,11 @@
 .git/
 .github/
 README.md
+
+# Local development artifacts inside the submodules. CI checks out fresh and
+# never has these, so excluding them keeps a local build honest (and much
+# smaller) instead of copying a host-built venv into a Linux image.
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+apps/*/data/
