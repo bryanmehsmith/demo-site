@@ -29,7 +29,7 @@ COPY --from=caddy /usr/bin/caddy /usr/local/bin/caddy
 COPY --from=momentum-factor-builder /app/apps/momentum-factor /app/apps/momentum-factor
 COPY --from=factor-regression-builder /app/apps/factor-regression /app/apps/factor-regression
 COPY static/ /app/static/
-COPY Caddyfile demos.json entrypoint.sh launch_demos.py /app/
+COPY Caddyfile demos.json entrypoint.sh launcher.py /app/
 RUN chmod +x /app/entrypoint.sh && chown -R appuser:appuser /app
 USER appuser
 EXPOSE 8080
