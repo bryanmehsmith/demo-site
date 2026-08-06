@@ -4,3 +4,6 @@
 [submodule "apps/factor-regression"]
 	path = apps/factor-regression
 	url = https://github.com/bryanmehsmith/factor-regression-lab.git
+[submodule "apps/nn-foundations"]
+	path = apps/nn-foundations
+	url = https://github.com/bryanmehsmith/nn-foundations-lab.git

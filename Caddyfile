@@ -38,6 +38,17 @@
 		}
 	}
 
+	handle /demos/nn-foundations* {
+		forward_auth 127.0.0.1:9000 {
+			uri /activate/nn-foundations
+			header_up X-Original-Uri {http.request.uri}
+		}
+		reverse_proxy 127.0.0.1:8503 {
+			lb_try_duration 20s
+			lb_try_interval 500ms
+		}
+	}
+
 	handle {
 		root * /app/static
 		file_server

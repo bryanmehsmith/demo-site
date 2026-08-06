@@ -10,5 +10,11 @@
     "kind": "streamlit",
     "entrypoint": "app/streamlit_app.py",
     "port": 8502
+  },
+  {
+    "slug": "nn-foundations",
+    "kind": "streamlit",
+    "entrypoint": "app/streamlit_app.py",
+    "port": 8503
   }
 ]
