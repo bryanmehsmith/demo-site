@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>Bryan Smith / Demos</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="A small collection of proof-of-concept demos by Bryan Smith, including a JSE momentum factor backtest.">
+<meta name="description" content="A small collection of proof-of-concept demos by Bryan Smith spanning quant finance backtesting, statistical inference, and neural networks from scratch.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23fffdf9'/%3E%3Ctext x='50' y='66' font-family='Helvetica Neue,Arial,sans-serif' font-size='40' font-weight='700' fill='%237a4f22' text-anchor='middle'%3EBS%3C/text%3E%3C/svg%3E">
 <style>
   :root {
@@ -98,28 +98,38 @@
     outline: none;
   }
 
-  .card-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
-  }
+  .card-name { display: block; font-size: 1.08rem; font-weight: 650; }
 
-  .card-name { font-size: 1.08rem; font-weight: 650; }
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
 
   .tag {
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: var(--muted-text);
-    background: var(--subtle-surface);
-    border: 1px solid var(--border-color);
     border-radius: 999px;
     padding: 3px 10px;
     white-space: nowrap;
   }
 
-  .card-desc { margin: 10px 0 0; color: var(--muted-text); font-size: 0.9rem; }
+  .tag-domain {
+    color: var(--accent-color);
+    background: transparent;
+    border: 1px solid var(--accent-color);
+    font-weight: 650;
+  }
+
+  .tag-tech {
+    color: var(--muted-text);
+    background: var(--subtle-surface);
+    border: 1px solid var(--border-color);
+  }
+
+  .card-desc { margin: 12px 0 0; color: var(--muted-text); font-size: 0.9rem; }
   .card-cta { display: inline-block; margin-top: 14px; color: var(--link-color); font-size: 0.85rem; font-weight: 600; }
 
   .note { margin: 28px 0 0; color: var(--muted-text); font-size: 0.85rem; }
@@ -143,34 +153,56 @@
   <header class="header">
     <div class="header-content">
       <h1>Demos</h1>
-      <p class="tagline">A few small proof-of-concept builds by Bryan Smith.</p>
+      <p class="tagline">A few small proof-of-concept builds by Bryan Smith, spanning quant finance, statistics, and machine learning.</p>
     </div>
   </header>
 
   <main>
     <div class="demos">
       <a class="card" href="/demos/momentum-factor/">
-        <div class="card-head">
-          <span class="card-name">Momentum Factor</span>
-          <span class="tag">streamlit</span>
+        <span class="card-name">Momentum Factor</span>
+        <div class="card-tags">
+          <span class="tag tag-domain">Quant Finance</span>
+          <span class="tag tag-domain">Backtesting</span>
+          <span class="tag tag-tech">Python</span>
+          <span class="tag tag-tech">pandas</span>
+          <span class="tag tag-tech">Streamlit</span>
         </div>
         <p class="card-desc">JSE 12-1 month momentum factor backtest: a long-only top-quantile portfolio, rebalanced monthly.</p>
         <span class="card-cta">View demo &rarr;</span>
       </a>
       <a class="card" href="/demos/factor-regression/">
-        <div class="card-head">
-          <span class="card-name">Factor Regression Lab</span>
-          <span class="tag">streamlit</span>
+        <span class="card-name">Factor Regression Lab</span>
+        <div class="card-tags">
+          <span class="tag tag-domain">Quant Finance</span>
+          <span class="tag tag-domain">Statistical Inference</span>
+          <span class="tag tag-tech">statsmodels</span>
+          <span class="tag tag-tech">SciPy</span>
+          <span class="tag tag-tech">Streamlit</span>
         </div>
         <p class="card-desc">Is it alpha or factor exposure? Fama-French regressions with the same result under classical, robust, and Newey-West standard errors.</p>
         <span class="card-cta">View demo &rarr;</span>
       </a>
       <a class="card" href="/demos/nn-foundations/">
-        <div class="card-head">
-          <span class="card-name">NN Foundations Lab</span>
-          <span class="tag">streamlit</span>
+        <span class="card-name">NN Foundations Lab</span>
+        <div class="card-tags">
+          <span class="tag tag-domain">Machine Learning</span>
+          <span class="tag tag-domain">From Scratch</span>
+          <span class="tag tag-tech">NumPy</span>
+          <span class="tag tag-tech">PyTorch</span>
+          <span class="tag tag-tech">Streamlit</span>
         </div>
         <p class="card-desc">A neural-network library built from scratch in NumPy, with manual backprop, Adam, and gradient checking, checked against an identical PyTorch model.</p>
+        <span class="card-cta">View demo &rarr;</span>
+      </a>
+      <a class="card" href="/demos/security-anti-patterns/">
+        <span class="card-name">Security Anti-Patterns</span>
+        <div class="card-tags">
+          <span class="tag tag-domain">Security Awareness</span>
+          <span class="tag tag-domain">Applied Cryptography</span>
+          <span class="tag tag-tech">Vanilla JS</span>
+        </div>
+        <p class="card-desc">Five interactive walk-throughs of everyday security mistakes: why a "password-protected" zip often isn't, why email has no undo, and more &mdash; built for technical and non-technical readers alike.</p>
         <span class="card-cta">View demo &rarr;</span>
       </a>
     </div>
