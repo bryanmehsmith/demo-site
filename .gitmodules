@@ -7,3 +7,6 @@
 [submodule "apps/nn-foundations"]
 	path = apps/nn-foundations
 	url = https://github.com/bryanmehsmith/nn-foundations-lab.git
+[submodule "apps/security-anti-patterns"]
+	path = apps/security-anti-patterns
+	url = https://github.com/bryanmehsmith/security-anti-patterns.git

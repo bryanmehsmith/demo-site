@@ -1,7 +1,7 @@
 # One builder stage per Streamlit demo submodule, each building its own isolated
 # .venv from its own pyproject.toml/uv.lock. The venv's shebangs bake in
 # WORKDIR, so it must match the final image path exactly (uv venvs aren't relocatable).
-# To add another demo:
+# To add another Streamlit demo:
 #   1. git submodule add <repo-url> apps/<slug>
 #   2. duplicate the stage below for apps/<slug>, with WORKDIR /app/apps/<slug>
 #   3. add `COPY --from=<slug>-builder /app/apps/<slug> /app/apps/<slug>` in the final stage
@@ -9,6 +9,9 @@
 #      the forward_auth (which starts the demo on demand, and must pass
 #      X-Original-Uri) and the reverse_proxy to its port. Copy an existing block;
 #      the pieces are load-bearing and explained there.
+# A static/JS demo submodule (no Python, no process) skips all of the above:
+# no builder stage, just a plain `COPY apps/<slug>/ /app/apps/<slug>/` in the
+# final stage, and a Caddyfile `handle_path` + `file_server` block.
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS momentum-factor-builder
 WORKDIR /app/apps/momentum-factor
 COPY apps/momentum-factor/pyproject.toml apps/momentum-factor/uv.lock ./
@@ -39,6 +42,7 @@ COPY --from=caddy /usr/bin/caddy /usr/local/bin/caddy
 COPY --from=momentum-factor-builder /app/apps/momentum-factor /app/apps/momentum-factor
 COPY --from=factor-regression-builder /app/apps/factor-regression /app/apps/factor-regression
 COPY --from=nn-foundations-builder /app/apps/nn-foundations /app/apps/nn-foundations
+COPY apps/security-anti-patterns/ /app/apps/security-anti-patterns/
 COPY static/ /app/static/
 COPY Caddyfile demos.json entrypoint.sh launcher.py /app/
 RUN chmod +x /app/entrypoint.sh && chown -R appuser:appuser /app

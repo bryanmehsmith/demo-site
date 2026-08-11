@@ -10,8 +10,8 @@
 	# is running until someone actually opens a demo.
 	#
 	# Static/JS demos would instead use handle_path + root+file_server out of
-	# static/demos/<slug>, since those don't care about the prefix and need no
-	# process at all.
+	# apps/<slug> (or static/demos/<slug> for one that isn't its own submodule),
+	# since those don't care about the prefix and need no process at all.
 	# X-Original-Uri is set explicitly rather than relying on forward_auth's
 	# defaults. launcher.py needs the real path to tell a page load from a
 	# reconnect: Streamlit retries a lost websocket forever, so those retries must
@@ -47,6 +47,11 @@
 			lb_try_duration 20s
 			lb_try_interval 500ms
 		}
+	}
+
+	handle_path /demos/security-anti-patterns* {
+		root * /app/apps/security-anti-patterns
+		file_server
 	}
 
 	handle {
