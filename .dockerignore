@@ -6,6 +6,11 @@ README.md
 # never has these, so excluding them keeps a local build honest (and much
 # smaller) instead of copying a host-built venv into a Linux image.
 **/.venv/
+**/venv/
 **/__pycache__/
+**/*.pyc
 **/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/.cache/
 apps/*/data/

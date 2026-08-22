@@ -96,16 +96,21 @@ def load_demos(path: pathlib.Path = DEMOS_PATH) -> dict[str, dict]:
     }
 
 
+# All demos share one uv workspace venv (see Dockerfile), so every process is
+# launched with the same interpreter regardless of which app it belongs to.
+SHARED_VENV_PYTHON = "/app/.venv/bin/python"
+
+
 def build_command(demo: dict) -> list[str]:
     slug = demo["slug"]
     if demo.get("kind") == "api":
         return [
-            f"/app/apps/{slug}/.venv/bin/python",
+            SHARED_VENV_PYTHON,
             f"/app/apps/{slug}/{demo['entrypoint']}",
             f"--port={demo['port']}",
         ]
     return [
-        f"/app/apps/{slug}/.venv/bin/streamlit", "run",
+        SHARED_VENV_PYTHON, "-m", "streamlit", "run",
         f"/app/apps/{slug}/{demo['entrypoint']}",
         f"--server.port={demo['port']}",
         "--server.address=127.0.0.1",
