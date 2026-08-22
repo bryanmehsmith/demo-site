@@ -1,4 +1,9 @@
-"""Starts each Streamlit demo on first request and stops it once nobody is using it.
+"""Starts each demo's process on first request and stops it once nobody is using it.
+
+Most demos are full Streamlit apps; momentum-factor is a static frontend backed
+by a small stdlib-only JSON API (kind "api" in demos.json) that only needs to
+run while its live-refresh toggle is in use. Either way, this launcher is what
+makes starting on demand possible.
 
 Demos used to all start at container boot, so every demo cost its memory whether
 or not anyone visited. With one demo that was invisible; with several it does not
@@ -76,16 +81,29 @@ def log(message: str) -> None:
     print(f"[launcher] {message}", flush=True)
 
 
+# Kinds this launcher knows how to start a process for. "streamlit" is a full
+# Streamlit app; "api" is a small stdlib-only JSON backend (e.g. momentum-factor's
+# live-refresh endpoint), sitting behind a static frontend that needs no process
+# of its own the rest of the time.
+KNOWN_KINDS = ("streamlit", "api")
+
+
 def load_demos(path: pathlib.Path = DEMOS_PATH) -> dict[str, dict]:
     return {
         demo["slug"]: demo
         for demo in json.loads(path.read_text())
-        if demo["kind"] == "streamlit"
+        if demo["kind"] in KNOWN_KINDS
     }
 
 
 def build_command(demo: dict) -> list[str]:
     slug = demo["slug"]
+    if demo.get("kind") == "api":
+        return [
+            f"/app/apps/{slug}/.venv/bin/python",
+            f"/app/apps/{slug}/{demo['entrypoint']}",
+            f"--port={demo['port']}",
+        ]
     return [
         f"/app/apps/{slug}/.venv/bin/streamlit", "run",
         f"/app/apps/{slug}/{demo['entrypoint']}",
@@ -98,6 +116,21 @@ def build_command(demo: dict) -> list[str]:
         # also muddies the CPU signal the abandoned-tab reaper depends on.
         "--server.fileWatcherType=none",
     ]
+
+
+def parse_activate_slug(path: str) -> str | None:
+    """Extract <slug> from a launcher request path of the form /activate/<slug>.
+
+    forward_auth appends the original request's own query string onto the
+    fixed `uri` given in the Caddyfile (e.g. momentum-factor's api subpath is
+    called with ?tickers=...), so that must be stripped before parsing rather
+    than assumed absent.
+    """
+    path = path.split("?", 1)[0]
+    parts = path.strip("/").split("/")
+    if len(parts) != 2 or parts[0] != "activate":
+        return None
+    return parts[1]
 
 
 def is_reconnect_only(original_uri: str | None) -> bool:
@@ -295,12 +328,10 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         # Caddy is configured to call /activate/<slug> and to pass the request it
         # is really handling in X-Original-Uri.
-        parts = self.path.strip("/").split("/")
-        if len(parts) != 2 or parts[0] != "activate":
+        slug = parse_activate_slug(self.path)
+        if slug is None:
             self._respond(404, "expected /activate/<slug>\n")
             return
-
-        slug = parts[1]
         demo = self.demos.get(slug)
         if demo is None:
             self._respond(404, f"unknown demo {slug!r}\n")

@@ -93,6 +93,25 @@ class PathClassificationTests(unittest.TestCase):
         self.assertFalse(launcher.is_reconnect_only(""))
 
 
+class ActivateSlugParsingTests(unittest.TestCase):
+    def test_parses_plain_activate_path(self):
+        self.assertEqual(launcher.parse_activate_slug("/activate/momentum-factor"), "momentum-factor")
+
+    def test_strips_a_query_string(self):
+        # forward_auth appends the original request's query string onto the
+        # fixed uri Caddy is configured with, e.g. momentum-factor's api
+        # subpath being called with ?tickers=...&start=...
+        self.assertEqual(
+            launcher.parse_activate_slug("/activate/momentum-factor?tickers=NPN.JO&start=2024-01-01"),
+            "momentum-factor",
+        )
+
+    def test_rejects_the_wrong_shape(self):
+        self.assertIsNone(launcher.parse_activate_slug("/activate"))
+        self.assertIsNone(launcher.parse_activate_slug("/activate/a/b"))
+        self.assertIsNone(launcher.parse_activate_slug("/nope/momentum-factor"))
+
+
 class CpuParsingTests(unittest.TestCase):
     def test_parses_utime_and_stime(self):
         # Fields after the name: state ppid pgrp session tty tpgid flags minflt
@@ -246,6 +265,16 @@ class BuildCommandTests(unittest.TestCase):
 
         self.assertIn("--server.baseUrlPath=/demos/factor-regression", command)
         self.assertIn("--server.port=8502", command)
+
+    def test_api_kind_runs_python_directly_with_a_port_flag(self):
+        command = launcher.build_command(
+            {"slug": "momentum-factor", "kind": "api", "port": 8501, "entrypoint": "app/api.py"}
+        )
+
+        self.assertEqual(
+            command,
+            ["/app/apps/momentum-factor/.venv/bin/python", "/app/apps/momentum-factor/app/api.py", "--port=8501"],
+        )
 
 
 if __name__ == "__main__":

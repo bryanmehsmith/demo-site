@@ -1,14 +1,14 @@
 [
   {
     "slug": "momentum-factor",
-    "kind": "streamlit",
-    "entrypoint": "app/streamlit_app.py",
+    "kind": "api",
+    "entrypoint": "app/api.py",
     "port": 8501
   },
   {
     "slug": "factor-regression",
-    "kind": "streamlit",
-    "entrypoint": "app/streamlit_app.py",
+    "kind": "api",
+    "entrypoint": "app/api.py",
     "port": 8502
   },
   {
