@@ -4,6 +4,16 @@ on:
   push:
     branches: [main]
 
+# Rapid pushes to main (e.g. several demo-repo "bump" commits landing within
+# seconds of each other) each start their own independent run. Without this,
+# their `az containerapp update` calls race, and whichever run happens to
+# finish last wins the deploy -- even if it was for an older commit. Cancelling
+# any in-progress run for the same branch when a newer push arrives guarantees
+# only the latest commit's run ever reaches that step.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   IMAGE: ghcr.io/${{ github.repository }}
 
