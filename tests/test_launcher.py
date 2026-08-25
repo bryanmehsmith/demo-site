@@ -273,7 +273,7 @@ class BuildCommandTests(unittest.TestCase):
 
         self.assertEqual(
             command,
-            ["/app/apps/momentum-factor/.venv/bin/python", "/app/apps/momentum-factor/app/api.py", "--port=8501"],
+            ["/app/.venv/bin/python", "/app/apps/momentum-factor/app/api.py", "--port=8501"],
         )
 
 

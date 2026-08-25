@@ -18,7 +18,22 @@ env:
   IMAGE: ghcr.io/${{ github.repository }}
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - run: python -m unittest discover tests
+
+      - uses: astral-sh/setup-uv@v3
+
+      - run: uv sync --all-packages
+      - run: uv run pytest
+
   build-and-deploy:
+    needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: read
