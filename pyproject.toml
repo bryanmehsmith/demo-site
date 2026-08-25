@@ -8,5 +8,4 @@ dependencies = []
 members = [
     "apps/momentum-factor",
     "apps/factor-regression",
-    "apps/nn-foundations",
 ]

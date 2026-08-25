@@ -24,7 +24,6 @@ COPY pyproject.toml uv.lock ./
 
 COPY apps/momentum-factor/pyproject.toml ./apps/momentum-factor/pyproject.toml
 COPY apps/factor-regression/pyproject.toml ./apps/factor-regression/pyproject.toml
-COPY apps/nn-foundations/pyproject.toml ./apps/nn-foundations/pyproject.toml
 
 RUN uv sync \
     --frozen \
@@ -34,7 +33,6 @@ RUN uv sync \
 
 COPY apps/momentum-factor/ ./apps/momentum-factor/
 COPY apps/factor-regression/ ./apps/factor-regression/
-COPY apps/nn-foundations/ ./apps/nn-foundations/
 
 RUN uv sync \
     --frozen \
@@ -62,11 +60,14 @@ COPY --from=apps-builder --chown=1000:1000 \
 COPY --from=apps-builder --chown=1000:1000 \
     /app/apps/factor-regression /app/apps/factor-regression
 
-COPY --from=apps-builder --chown=1000:1000 \
-    /app/apps/nn-foundations /app/apps/nn-foundations
-
 COPY --chown=1000:1000 \
     apps/security-anti-patterns/ /app/apps/security-anti-patterns/
+
+# nn-foundations is a fully static demo (see Caddyfile): only its built frontend
+# ships, never its Python reference implementation (src/, tests/, pyproject.toml),
+# which stays in the repo purely for local fixture generation and parity testing.
+COPY --chown=1000:1000 \
+    apps/nn-foundations/frontend/ /app/apps/nn-foundations/frontend/
 
 COPY --chown=1000:1000 static/ /app/static/
 

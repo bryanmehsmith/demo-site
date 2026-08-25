@@ -51,15 +51,12 @@
 		file_server
 	}
 
-	handle /demos/nn-foundations* {
-		forward_auth 127.0.0.1:9000 {
-			uri /activate/nn-foundations
-			header_up X-Original-Uri {http.request.uri}
-		}
-		reverse_proxy 127.0.0.1:8503 {
-			lb_try_duration 20s
-			lb_try_interval 500ms
-		}
+	# nn-foundations is a fully static demo (no process, like security-anti-patterns
+	# below): a from-scratch neural-network library in plain JavaScript, with
+	# TensorFlow.js lazy-loaded only by its one comparison tab.
+	handle_path /demos/nn-foundations* {
+		root * /app/apps/nn-foundations/frontend
+		file_server
 	}
 
 	handle_path /demos/security-anti-patterns* {
