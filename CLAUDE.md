@@ -43,6 +43,8 @@ Four, each its own GitHub repo under `apps/<slug>`: `momentum-factor`, `factor-r
 
 See `.claude/skills/verify` for the full dispatch (root `unittest` suite, per-submodule pytest where one exists, manual smoke pass via `dev.sh`). There's no single command that verifies everything - check the skill for which step applies to what you changed.
 
+For a change scoped to one submodule, run that submodule's own `verify` skill/pytest only, not the root suite plus every other submodule's - reserve the full dispatch for cross-cutting changes (`launcher.py`, `Caddyfile`, `demos.json`) or a final pre-done pass.
+
 ## CI
 
 `.github/workflows/deploy.yml` runs on push to `main`: a `test` job (root `unittest` suite + `uv run pytest`) gates `build-and-deploy`, which builds the image, pushes to `ghcr.io`, and updates the Azure Container App.
