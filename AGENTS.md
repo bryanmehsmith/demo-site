@@ -1,6 +1,6 @@
-# CLAUDE.md
+# Codex Agent Instructions
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Codex and other coding agents working in this repository.
 
 ## What this is
 
@@ -35,7 +35,7 @@ Despite the README calling out Streamlit as the original choice, the two Python 
 
 ## Submodules
 
-Four, each its own GitHub repo under `apps/<slug>`: `momentum-factor`, `factor-regression`, `nn-foundations`, `security-anti-patterns`. Each has its own `.claude/skills/verify` and `CLAUDE.md` - read those before working inside `apps/<slug>`, they carry demo-specific context this file doesn't repeat.
+Four, each its own GitHub repo under `apps/<slug>`: `momentum-factor`, `factor-regression`, `nn-foundations`, `security-anti-patterns`. Each has its own `.claude/skills/verify` and `AGENTS.md` - read those before working inside `apps/<slug>`, they carry demo-specific context this file doesn't repeat.
 
 **`DEMO_SITE_PAT` gotcha**: a submodule repo that should auto-publish on push to its own `main` needs a `.github/workflows/bump-demo-site.yml` (modeled on momentum-factor's) with a `DEMO_SITE_PAT` secret - a fine-grained PAT scoped to just this repo with Contents: Read and write, used to push the submodule-pointer bump commit here. If that PAT is missing or has expired, the bump workflow fails *silently* from demo-site's point of view - the submodule's own repo has moved on, but demo-site's pointer (and therefore the deployed image) is stuck on the old commit with no visible error here. If a demo seems to be running stale code, check the PAT and the submodule repo's Actions tab before anything else.
 
