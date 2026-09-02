@@ -6,7 +6,7 @@ demo-site has no pyproject and no Python dependencies, so these run with
 The reaper's decision table is the part worth testing: it is a few lines of
 conditionals that decide whether to kill a visitor's session, and getting it
 wrong is either a visible outage or a memory leak that only shows up days later.
-Process handling is faked so the tests stay fast and do not spawn Streamlit.
+Process handling is faked so the tests stay fast and do not spawn a backend.
 """
 
 import sys

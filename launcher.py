@@ -1,14 +1,13 @@
-"""Starts each demo's process on first request and stops it once nobody is using it.
+"""Starts optional demo backends on first request and stops them when idle.
 
-Most demos are full Streamlit apps; momentum-factor is a static frontend backed
-by a small stdlib-only JSON API (kind "api" in demos.json) that only needs to
-run while its live-refresh toggle is in use. Either way, this launcher is what
-makes starting on demand possible.
+Every current demo has a static frontend. Momentum-factor and factor-regression
+each have a small JSON API (kind "api" in demos.json) used only for optional
+live-data requests. This launcher starts those companion processes on demand.
+It also retains the generic "streamlit" kind for future process-backed demos.
 
-Demos used to all start at container boot, so every demo cost its memory whether
-or not anyone visited. With one demo that was invisible; with several it does not
-scale, since each analysis demo holds a few hundred MiB of the scientific Python
-stack.
+Process-backed demos used to start at container boot, so each one consumed
+memory whether or not anyone used its optional backend. Starting them on demand
+keeps that scientific Python stack out of memory until it is needed.
 
 Caddy calls this service via `forward_auth` before proxying a demo request. The
 handler makes sure the demo is running, waits for its port to accept
@@ -25,10 +24,9 @@ Two kinds of idleness are reaped, because they need different evidence:
   abandoned tab from a busy one; CPU time can, because a rerun costs a
   measurable slice and sitting still costs essentially nothing.
 
-Requests that only a reconnecting client makes are answered without starting
-anything. Streamlit's frontend retries forever with a two second ceiling, so if
-those requests could start a demo, every reaped session would immediately be
-resurrected by the tab that was abandoned.
+For the retained Streamlit mode, requests that only a reconnecting client makes
+are answered without starting anything. Otherwise, a reaped session could be
+immediately resurrected by an abandoned tab's retry loop.
 """
 import json
 import os

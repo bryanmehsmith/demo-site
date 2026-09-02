@@ -1,18 +1,18 @@
-# One shared uv workspace venv for all three Python demo submodules, instead of
-# an isolated venv per app. Streamlit, pandas, numpy, pyarrow and matplotlib were
-# previously installed three times over; the workspace lets uv resolve and
-# install them once. The venv's shebangs bake in WORKDIR, so it must match the
-# final image path exactly (uv venvs aren't relocatable).
-# To add another Streamlit demo:
+# One shared uv workspace venv for the two hybrid Python demo submodules,
+# instead of an isolated venv per app. The workspace lets uv resolve and install
+# their shared scientific stack once. The venv's shebangs bake in WORKDIR, so it
+# must match the final image path exactly (uv venvs aren't relocatable).
+# To add another Python-backed demo:
 #   1. git submodule add <repo-url> apps/<slug>
 #   2. add apps/<slug> to [tool.uv.workspace] members in the root pyproject.toml,
 #      run `uv lock` at the root, and commit the updated uv.lock
 #   3. add COPY lines for apps/<slug>/pyproject.toml and apps/<slug>/ in the
 #      apps-builder stage below, and for /app/apps/<slug> in the final stage
-#   4. add an entry to demos.json, and a Caddyfile `handle` block containing both
-#      the forward_auth (which starts the demo on demand, and must pass
-#      X-Original-Uri) and the reverse_proxy to its port. Copy an existing block;
-#      the pieces are load-bearing and explained there.
+#   4. for a hybrid static frontend plus API, add a kind `api` registry entry,
+#      an API-specific handle_path with forward_auth + reverse_proxy, and a
+#      separate static file_server catch-all. Put the API route first.
+#   5. for a full Streamlit route, add a kind `streamlit` registry entry and one
+#      handle that preserves the prefix and contains forward_auth + reverse_proxy.
 # A static/JS demo submodule (no Python, no process) skips all of the above:
 # no builder involvement, just a plain `COPY apps/<slug>/ /app/apps/<slug>/` in
 # the final stage, and a Caddyfile `handle_path` + `file_server` block.
