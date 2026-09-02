@@ -1,21 +1,29 @@
 :8080 {
-	# One block per demo. Streamlit demos use `handle` (not handle_path) and
-	# reverse_proxy to their internal port (see demos.json). Streamlit's own
-	# --server.baseUrlPath expects the full /demos/<slug> prefix to stay on the
-	# request, so the prefix must NOT be stripped before proxying.
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+		Permissions-Policy "camera=(), geolocation=(), microphone=(), payment=(), usb=()"
+		Content-Security-Policy "base-uri 'self'; object-src 'none'; frame-ancestors 'none'"
+	}
+
+	# Every current demo has a static frontend. The two optional live-data APIs
+	# use the /api/* blocks below; all analysis and visualization stays in the
+	# browser. The launcher also retains generic Streamlit support for a future
+	# process-backed demo, but no current route uses it.
 	#
 	# `forward_auth` is not doing authentication here; it is the hook that makes
-	# demos start on demand. Caddy asks launcher.py about the request first, and
-	# launcher.py only answers 200 once that demo's process is listening. Nothing
-	# is running until someone actually opens a demo.
+	# an optional API start on demand. Caddy asks launcher.py about the request
+	# first, and launcher.py only answers 200 once that process is listening.
 	#
-	# Static/JS demos would instead use handle_path + root+file_server out of
+	# Static/JS frontends use handle_path + root+file_server out of
 	# apps/<slug> (or static/demos/<slug> for one that isn't its own submodule),
 	# since those don't care about the prefix and need no process at all.
 	# X-Original-Uri is set explicitly rather than relying on forward_auth's
-	# defaults. launcher.py needs the real path to tell a page load from a
-	# reconnect: Streamlit retries a lost websocket forever, so those retries must
-	# not be allowed to restart a demo that was deliberately stopped.
+	# defaults. The generic Streamlit launcher path needs the real path to tell a
+	# page load from a reconnect so retries cannot restart a deliberately stopped
+	# process.
 	#
 	# momentum-factor is a hybrid: a static frontend (no process, file_server
 	# below) plus a tiny on-demand JSON API behind /api/* for its live-refresh

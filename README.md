@@ -2,17 +2,17 @@
 
 Hosts `demo.bryansmith.co.za`, a single Azure Container App that fronts many
 lightweight POC demos behind one Caddy reverse proxy. Each demo lives in its
-own repo, pulled in here as a git submodule under `apps/<slug>`. Streamlit
-demos run as an internal process that Caddy proxies to at `/demos/<slug>`;
-static/JS demos have no process at all, and are served straight off disk by
-Caddy's `file_server`. A demo can also skip the submodule and live directly
-under `static/demos/<slug>/` if it doesn't need its own repo.
+own repo, pulled in here as a git submodule under `apps/<slug>`. All current
+demos use static JavaScript frontends served by Caddy's `file_server`.
+Momentum Factor and Factor Regression also have small, optional JSON APIs for
+fresh market-data requests; their analysis still runs in the browser. A demo
+can skip the submodule and live directly under `static/demos/<slug>/` if it
+doesn't need its own repo.
 
-Streamlit was chosen deliberately here to keep infrastructure minimal and
-hosting cost low while still getting the analysis across. More broadly, the
-coding, architecture, and infrastructure decisions in this repo are POC-scale
-choices, not a reflection of what a company/enterprise setup would look like;
-a company environment would justify a different, more robust strategy.
+Static frontends, on-demand companion APIs, and one shared container keep
+infrastructure and hosting cost low. These are POC-scale choices, not a
+reflection of what a company or enterprise setup would look like; a company
+environment would justify a different strategy.
 
 ## Adding a demo
 
@@ -25,20 +25,35 @@ a company environment would justify a different, more robust strategy.
 4. Add the mount to `dev.sh` for live-refresh in local dev.
 5. Link it from `static/index.html`.
 6. If the demo's own repo should auto-publish on every push to its `main`
-   branch, add a `.github/workflows/bump-demo-site.yml` to *that* repo (see
-   step 6 under Streamlit below).
+   branch, add a `.github/workflows/bump-demo-site.yml` to *that* repo, modeled
+   on the one in the momentum-factor repo.
 
 **Static/JS, no separate repo:** add `static/demos/<slug>/`, link it from
 `static/index.html`.
 
-**Streamlit:**
+**Static/JS with an optional Python API:**
+1. Add the submodule under `apps/<slug>`, add a static frontend
+   `handle_path` + `file_server` route, link it from `static/index.html`, and
+   mount its frontend in `dev.sh`.
+2. Add the submodule to the root `pyproject.toml` uv workspace, copy its
+   `pyproject.toml` and source in the Dockerfile's `apps-builder` stage, run
+   `uv lock` at the root, and copy the built app into the final image from the
+   builder. Use this builder-origin copy instead of the plain static-submodule
+   copy described above. The shared workspace venv must remain at
+   `/app/.venv` because its shebangs are not relocatable.
+3. Add a `kind: "api"` entry to `demos.json` with its entrypoint and port.
+4. Before the frontend's catch-all route, add a more specific
+   `/demos/<slug>/api/*` block with `forward_auth` and `reverse_proxy`. Use the
+   momentum-factor block as the working pattern.
+5. Mount the frontend and editable backend source paths in `dev.sh`. These app
+   mounts do not affect the shared environment at `/app/.venv`.
+
+**Process-backed Streamlit (supported, but not used by a current demo):**
 1. `git submodule add <repo-url> apps/<slug>`. The target repo needs its own
    `pyproject.toml`/`uv.lock` and a Streamlit entrypoint at a known relative path.
-2. Add an entry to `demos.json` (slug, entrypoint path, port).
-3. Duplicate a builder stage in the `Dockerfile` for the new submodule (with a
-   matching `WORKDIR /app/apps/<slug>` (uv venvs bake in their build path, so
-   it must match the final location), and add its `COPY --from=<slug>-builder`
-   line in the final stage.
+2. Add it to the shared uv workspace and Dockerfile using the same build pattern
+   as an API-backed demo, then run `uv lock` at the root.
+3. Add a `kind: "streamlit"` entry to `demos.json` with its entrypoint and port.
 4. Add a `handle /demos/<slug>*` block to `Caddyfile` (not `handle_path`;
    Streamlit's `--server.baseUrlPath` needs the full prefix kept on the request).
 5. Link it from `static/index.html`.
@@ -72,20 +87,18 @@ the source bind-mounted over the image's copies, on **http://localhost:8090**
 `DEV_PORT=<port> ./dev.sh` if 8090 is also taken).
 
 What that gets you:
-- **Static/JS demos and the landing page** (`static/`, `apps/security-anti-patterns/`):
+- **Static/JS frontends and the landing page** (`static/` and each demo's
+  frontend directory):
   edits show up on the next browser refresh, no restart needed, since
-  Caddy's `file_server` reads from disk per request. The whole
-  `apps/security-anti-patterns` directory is mounted (there's no baked
-  `.venv` to protect, unlike the Streamlit demos below).
+  Caddy's `file_server` reads from disk per request. Fully static demos can be
+  mounted as a whole because they have no baked `.venv` to protect.
 - **`Caddyfile` / `demos.json` / `launcher.py`**: edits need a container
   restart (`docker restart <container>`), not a rebuild.
-- **Streamlit demo source** (each demo's `app/`, `src/`, and, for
-  momentum-factor/factor-regression, `assets/`, `config/`, `data/`): only
-  those subpaths are mounted, deliberately leaving each demo's baked `.venv`
-  from the image alone; mounting the whole `apps/<slug>` would shadow it with
-  the bare submodule checkout (no `.venv`) and the demo would fail to start.
-  Streamlit's file watcher is disabled in this repo (see `launcher.py`'s
-  idle-reaping logic), so source edits also need a container restart, not
-  just a refresh.
+- **Optional API and Python reference source** (each hybrid demo's `app/`,
+  `src/`, `assets/`, `config/`, and `data/`): only
+  those source paths are mounted for targeted live editing. The environment is
+  shared at `/app/.venv`, outside every app directory, so app mounts do not
+  shadow it. Backend source edits need a container restart because the launcher
+  does not run a source watcher.
 - Changing a demo's dependencies (`pyproject.toml`/`uv.lock`) still needs a
   full rebuild, since venvs are built once at image-build time.
